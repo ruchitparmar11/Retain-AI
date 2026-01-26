@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+body {
+  background-color: #0f172a;
+  /* Slate 900 for a dark premium theme */
+  color: #f8fafc;
+  /* Slate 50 */
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
