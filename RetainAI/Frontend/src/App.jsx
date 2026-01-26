@@ -8,6 +8,8 @@ function App() {
   const [stats, setStats] = useState(null);
   const [features, setFeatures] = useState(null);
   const [history, setHistory] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -18,7 +20,6 @@ function App() {
     senior_citizen: -1 // -1 for All, 0 for No, 1 for Yes
   });
 
-  // Function to refresh data
   const loadData = async () => {
     setLoading(true);
 
@@ -40,8 +41,9 @@ function App() {
 
     // Fetch History
     try {
-      const historyData = await getHistory();
-      setHistory(historyData);
+      const historyData = await getHistory(currentPage);
+      setHistory(historyData.items || []);
+      setTotalPages(historyData.pages || 1);
     } catch (error) {
       console.error("Failed to load history:", error);
     } finally {
@@ -49,10 +51,10 @@ function App() {
     }
   };
 
-  // Reload when filters change
+  // Reload when filters or page changes
   useEffect(() => {
     loadData();
-  }, [filters]);
+  }, [filters, currentPage]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -427,19 +429,45 @@ function App() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-slate-700/50 flex justify-between items-center bg-slate-900/30">
+              <div className="text-sm text-slate-400">
+                Page <span className="font-semibold text-white">{currentPage}</span> of <span className="font-semibold text-white">{totalPages}</span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-      </main>
+      </main >
 
       {/* Prediction Modal */}
-      <PredictionModal
+      < PredictionModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           loadData(); // Refresh history when closing
-        }}
+        }
+        }
       />
-    </div>
+    </div >
   )
 }
 

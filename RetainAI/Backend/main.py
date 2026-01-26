@@ -280,13 +280,20 @@ def predict_churn_and_save(data: CustomerData):
     }
 
 @app.get("/history")
-def get_history():
+def get_history(page: int = 1, limit: int = 10):
     load_dotenv()
     DATABASE_URL = os.getenv("DATABASE_URL")
     engine = create_engine(DATABASE_URL)
     
+    offset = (page - 1) * limit
+    
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM prediction_logs ORDER BY created_at DESC LIMIT 10"))
+        # Get Total Count
+        total_result = conn.execute(text("SELECT COUNT(*) FROM prediction_logs"))
+        total_records = total_result.scalar()
+        
+        # Get Paginated Data
+        result = conn.execute(text(f"SELECT * FROM prediction_logs ORDER BY created_at DESC LIMIT {limit} OFFSET {offset}"))
         rows = result.fetchall()
         
     history = []
@@ -303,7 +310,13 @@ def get_history():
             "date": row[4].strftime("%Y-%m-%d %H:%M")
         })
     
-    return history
+    import math
+    return {
+        "items": history,
+        "total": total_records,
+        "page": page,
+        "pages": math.ceil(total_records / limit)
+    }
 
 @app.get("/export")
 def export_history():

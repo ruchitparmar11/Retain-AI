@@ -45,13 +45,13 @@ export const getFeatureImportance = async () => {
     }
 };
 
-export const getHistory = async () => {
+export const getHistory = async (page = 1, limit = 5) => {
     try {
-        const response = await axios.get(`${API_URL}/history`);
+        const response = await axios.get(`${API_URL}/history?page=${page}&limit=${limit}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching history:", error);
-        return [];
+        return { items: [], total: 0, pages: 0, page: 1 };
     }
 };
 
