@@ -3,8 +3,9 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import os
 
-# 1. Use your NEW Neon Cloud URL directly here
-NEON_DB_URL = "postgresql://neondb_owner:npg_30KBuDTPqlnr@ep-plain-night-ahack73w-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require"
+# 1. Load env
+load_dotenv()
+NEON_DB_URL = os.getenv("DATABASE_URL")
 
 def upload_to_cloud():
     print("Connecting to Cloud Database...")
