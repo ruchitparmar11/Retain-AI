@@ -17,7 +17,7 @@ app = FastAPI(title="RetainAI API", version="1.0")
 # Enable CORS for React Frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # React Default Port
+    allow_origins=["*"], # Allow all for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
